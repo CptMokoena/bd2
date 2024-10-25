@@ -1,16 +1,18 @@
+version: '3.5'
+
 services:
-  db:
-    image: postgres:16-alpine
-    volumes:
-      - db_data:/data/postgres
-      - ./scripts:/docker-entrypoint-initdb.d
-    ports:
-      - "5432:5432"
+  database:
+    image: postgres:11
     environment:
-      POSTGRES_DB: "bd2"
-      POSTGRES_USER: "bd2"
-      POSTGRES_PASSWORD: "bd2"
-      PGDATA: /data/postgres
+      POSTGRES_DB: bd2
+      POSTGRES_USER: bd2
+      POSTGRES_PASSWORD: passwordSicura
+      PGDATA: /var/dbdata
+    ports:
+    - 5432:5432
+    volumes:
+    - db_data:/var/dbdata
+    - ./db:/docker-entrypoint-initdb.d
 
 volumes:
   db_data:
