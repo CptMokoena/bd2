@@ -1,18 +1,25 @@
--- 1) 5s
+-- 1) 2s 833ms
 -- full scan of games, achievements, user_game, users
--- 2) 50ms
+
+-- 2) 148ms
 -- full scan of user_game, games, users
--- 3) 21ms
+
+-- 3) 208ms
 -- full scan of games * 2
--- 4) 46ms
+
+-- 4) 142ms
 -- full scan of user_game, games, users
--- 5) 65ms
+
+-- 5) 150ms
 -- full scan of user_achievement, users
--- 6) 259ms
+
+-- 6) 170ms
 -- full scan of user_game, users
--- 7) 1m 55s
+
+-- 7) 5s 16ms
 -- full scan of games, achievements, user_achievements, achievements * 2
--- 8) 163ms
+
+-- 8) 183ms
 -- full scan of user_achievements, achievements, users
 
 CREATE INDEX idx__game__achievement ON achievements(game);
