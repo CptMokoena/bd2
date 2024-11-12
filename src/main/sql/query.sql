@@ -33,12 +33,12 @@ FROM users u
 WHERE ug.hours_played > 449 AND g.price BETWEEN 300 AND 500;
 
 
--- 5) Selezionare gli utenti che hanno sbloccato un achievement nelle prime ore di gioco
+-- 5) Selezionare gli utenti che hanno sbloccato un achievement nelle prime 3 ore di gioco
 -- Condizioni rispettate: a, c, m
 SELECT DISTINCT u.username
 FROM users u
     JOIN user_achievement ua on u.username = ua."user"
-WHERE ua.unlocked_at_played_hours <= 10;
+WHERE ua.unlocked_at_played_hours <= 3;
 
 
 -- 6) Query che restituisce gli utenti che possiedono almeno 10 giochi
