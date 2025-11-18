@@ -1,5 +1,3 @@
-version: '3.5'
-
 name: bd2
 services:
   database:
