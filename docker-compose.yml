@@ -1,7 +1,7 @@
 name: bd2
 services:
   database:
-    image: postgres:16
+    image: postgres:18
     environment:
       POSTGRES_DB: bd2
       POSTGRES_USER: bd2
@@ -11,7 +11,7 @@ services:
     - 5432:5432
     volumes:
     - db_data:/var/dbdata
-    - ./db:/docker-entrypoint-initdb.d
+    - ./db/init:/docker-entrypoint-initdb.d
 
 volumes:
   db_data:
