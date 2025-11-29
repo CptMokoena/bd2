@@ -12,7 +12,7 @@ create table users (
 );
 create table games
 (
-	code varchar(20),
+	code varchar(36),
 	name varchar(100),
 	description text,
 	price numeric(8,2)
@@ -22,7 +22,7 @@ create table achievements
 	name varchar(100),
 	description text,
 	difficulty int4,
-	game varchar(20)
+	game varchar(36)
 );
 create table user_achievement
 (

@@ -11,7 +11,14 @@ Authors:
 
 ## PARTE A
 ### 1
-Come DBMS abbiamo scelto di utilizzare PostgreSQL
+Come DBMS abbiamo scelto di utilizzare PostgreSQL 18.
+Nella versione 18 di Postgres sono abilitate di default le Parallel Query; 
+quest'ultime, se ritenute dall'ottimizzatore appropriate, sono legate a dei query plan 
+che sfruttano multiple CPU in modo da poter rispondere in modo più veloce alla query.
+Nel nostro caso abbiamo disabilitato questo comportamento in quanto, per avere un rallentameno percepibile di una Parallel Query,
+è necessario avere un dataset molto più grosso di quello che abbiamo generato; 
+per disabilitare è stata impostata la variabile di configurazione `max_parallel_workers_per_gather` a `0`.
+
 ### 2
 #### i
 Abbiamo scelto di modellare una possibile base dati di un sito web volto al
@@ -66,7 +73,8 @@ Per verificare che il numero di pagine sia corretto:
     ```
 
 #### iv
-Per popolare il database con dei dati è stato scritto uno script in javascript.
+Per popolare il database con dei dati è stato scritto uno script in javascript che genera 
+uno script SQL contenente tutte le INSERT necessarie per popolare il database.
 Lo script si trova dentro la cartella `data_generator`, per lanciarlo basta eseguire il comando `npm run start`.
 Lo script si appoggia alla libreria `faker` per generare dei dati verosimili.
 
