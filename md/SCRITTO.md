@@ -72,6 +72,14 @@ Per verificare che il numero di pagine sia corretto:
     SELECT pg_relation_size('table_name') / current_setting('block_size')::BIGINT AS page_count
     ```
 
+| tabella | righe | bytes |
+|---|---|---|
+| achievements | 142595 | 8581 |
+| games | 50000 | 5451 |
+| user_achievements | 1004847 | 20112 |
+| user_game | 1281383 | 15448 |
+
+
 #### iv
 Per popolare il database con dei dati è stato scritto uno script in javascript che genera 
 uno script SQL contenente tutte le INSERT necessarie per popolare il database.
@@ -141,16 +149,29 @@ ORDER BY u.username;
 7) Selezionare il nome di tutti i giochi i quali hanno almeno 1/3 degli achievement non sbloccati
 ```sql
 -- Condizioni rispettate: c, g,
-SELECT g.name
-FROM games g
-WHERE ((SELECT count(a.name)
-        FROM achievements a
-        WHERE a.game = g.code) / 3) <= (SELECT count(aos.achievement_name)
-                                        FROM achievement_obtained_stats aos
-                                            JOIN achievements a ON a.game = g.code AND aos.achievement_name = a.name
-                                        WHERE user_count = 0);
+SELECT
+    g.name
+FROM
+    games g
+JOIN
+    (
+        SELECT
+            a.game AS game_code,
+            COUNT(a.name) AS total_achievements,
+            COUNT(CASE WHEN ua."user" IS NULL THEN 1 END) AS unlocked_by_zero_users
+        FROM
+            achievements a
+        LEFT JOIN 
+            user_achievement ua ON ua.achievement = a.name
+        GROUP BY
+            a.game
+        HAVING 
+            COUNT(DISTINCT ua.achievement) IS NOT NULL 
+            OR COUNT(a.name) > 0
+    ) AS AchCounts ON g.code = AchCounts.game_code
+WHERE
+    AchCounts.unlocked_by_zero_users >= (AchCounts.total_achievements / 3.0);
 ```
-
 8) Selezionare gli utenti che hanno ottenuto un achievement di difficoltà = 5
 ```sql
 -- Condizioni rispettate: a, c, d, m
@@ -161,6 +182,78 @@ FROM users u
 WHERE a.difficulty = 5
 ORDER BY u.username;
 ```
+### 2
+Innanzitutto sono stati creati gli indici che rappresentano le chiavi primarie
+delle varie tabelle; questi indici possono essere utilizzati in tutte le join.
+(`px_users` in quanto rappresenta la chiave
+primaria di users;`px_games` in quanto rappresenta la chiave
+primaria di games;`px_achievement` in quanto rappresenta la chiave primaria di
+achievement;`px_user_game` in quanto rappresenta la chiave
+primaria di user_game;`px_user_achievement` in quanto rappresenta 
+la chiave primaria di user_achievement;)
+
+L'indice composto `idx__user_games__hours_per_game_per_user` è stato creato per consentire di ottimizzare le ricerche che si basano sul numero di ore giocate per un utente (query 2 e query 4)
+
+L'indice `idx__games__price` consente di ottimizzare le query basate sul prezzo di un gioco (query 3 e query 4)
+
+L'indice `idx__user_achievement__hours` consente di ottimizzare le query basate
+sul sapere quando un certo achievement è stato ottenuto. (query 5)
+
+L'indice `idx__achievements__difficulty` consente di ottimizzare le query basate
+sulla difficolta di un achievement. (query 8).
+
+L'indice `idx__achievements__game` consente di ottimizzare le query basate
+sul raggruppare gli achivement per giochi (query 7)
+
+### 3
+```sql
+CREATE UNIQUE INDEX px_users ON users(username);
+CREATE UNIQUE INDEX px_games ON games(code);
+CREATE UNIQUE INDEX px_achievements ON achievements(name);
+CREATE UNIQUE INDEX px_user_game ON user_game("user", game);
+CREATE UNIQUE INDEX px_user_achievement ON user_achievement(achievement, "user");
+
+CREATE INDEX idx__user_game__hours_per_game_per_user ON user_game(hours_played, game, "user");
+CREATE INDEX idx__games__price ON games(price);
+CREATE INDEX idx__user_achievement__hours ON user_achievement(unlocked_at_played_hours);
+CREATE INDEX idx__achievements__difficulty ON achievements(difficulty);
+CREATE INDEX idx__achievements__game ON achievements(game, name);
+```
+### 4
+![Query 1 PRE](./query_1.png)
+![Query 1 POST](./query_1_post.png)
+![Query 2 PRE](./query_2.png)
+![Query 2 POST](./query_2_post.png)
+![Query 3 PRE](./query_3.png)
+![Query 3 POST](./query_3_post.png)
+![Query 4 PRE](./query_4.png)
+![Query 4 POST](./query_4_post.png)
+![Query 5 PRE](./query_5.png)
+![Query 5 POST](./query_5_post.png)
+![Query 6 PRE](./query_6.png)
+![Query 6 POST](./query_6_post.png)
+![Query 7 PRE](./query_7.png)
+![Query 7 POST](./query_7_post.png)
+![Query 8 PRE](./query_8.png)
+![Query 8 POST](./query_8_post.png)
+
+| query | prima | dopo |
+|---|---|---|
+| query 1 | 3039ms | 2750ms |
+| query 2 | 428ms | 118ms |
+| query 3 | 165ms | 59ms |
+| query 4 | 358ms | 30ms |
+| query 5 | 442ms | 303ms |
+| query 6 | 1456ms | 678ms |
+| query 7 | 7613ms | 2583ms |
+| query 8 | 1198ms | 1151ms |
+
+La maggior parte delle query ottengono un enorme beneficio dalla presenza degli
+indici; per esempio nella query 7 gli indici consentono di evitare le due due full scan su user_achievement e achievements, oppure la query 4 che consente di effettura
+la query sfruttando interamente gli indici.
+Nelle query ad alta selettività (query 1, query 5, query 8) si può notare che il
+miglioramento dato dalla presenza dello schema fisico è minimo. Questo è dovuto al fatto che, quando una select ritorna più del 5-10% delle tuple di una relazione, è 
+meglio eseguire una seq scan rispetto che ad una index scan.
 
 ## PARTE C
 ## PARTE D

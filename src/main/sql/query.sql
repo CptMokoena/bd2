@@ -53,14 +53,28 @@ ORDER BY u.username;
 
 -- 7) Selezionare il nome di tutti i giochi i quali hanno almeno 1/3 degli achievement non sbloccati
 -- Condizioni rispettate: c, g,
-SELECT g.name
-FROM games g
-WHERE ((SELECT count(a.name)
-        FROM achievements a
-        WHERE a.game = g.code) / 3) <= (SELECT count(aos.achievement_name)
-                                        FROM achievement_obtained_stats aos
-                                            JOIN achievements a ON a.game = g.code AND aos.achievement_name = a.name
-                                        WHERE user_count = 0);
+SELECT
+    g.name
+FROM
+    games g
+JOIN
+    (
+        SELECT
+            a.game AS game_code,
+            COUNT(a.name) AS total_achievements,
+            COUNT(CASE WHEN ua."user" IS NULL THEN 1 END) AS unlocked_by_zero_users
+        FROM
+            achievements a
+        LEFT JOIN 
+            user_achievement ua ON ua.achievement = a.name
+        GROUP BY
+            a.game
+        HAVING 
+            COUNT(DISTINCT ua.achievement) IS NOT NULL 
+            OR COUNT(a.name) > 0
+    ) AS AchCounts ON g.code = AchCounts.game_code
+WHERE
+    AchCounts.unlocked_by_zero_users >= (AchCounts.total_achievements / 3.0);
 
 
 -- 8) Selezionare gli utenti che hanno ottenuto un achievement di difficoltà = 5
