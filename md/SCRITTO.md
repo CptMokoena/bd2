@@ -255,5 +255,30 @@ Nelle query ad alta selettività (query 1, query 5, query 8) si può notare che 
 miglioramento dato dalla presenza dello schema fisico è minimo. Questo è dovuto al fatto che, quando una select ritorna più del 5-10% delle tuple di una relazione, è 
 meglio eseguire una seq scan rispetto che ad una index scan.
 
+### 5
+La relazione `users` ha come chiave l'attributo `username`, che rappresenta univocamente un utente nel sistema, gli attributi `password, email, gender, phone` vengono
+determinati dallo username di un utente. Quindi esiste la funzione `{username} -> {password, email, gender, phone}`.
+
+La relazione `games` ha come chiave l'attributo `code`, che rappresenta univocamente un gioco nel sistema, gli attributi `name, description, price` vengono determinati
+dal codice di un gioco. 
+
+La relazione `achievements` ha come chiave l'attributo `name` che rappresenta univocamente un obbietivo nel sistema, gli attributi `description, difficulty, game` vengono
+determinati dal nome dell'obbiettivo.
+
+Nella relazione `user_achievements` la chiave è la coppia `{user, achievement}`; 
+gli attributi `unlocked_date, unlocked_at_played_hours` vengono determinati dalla chiave. Ogni tupla all'interno della tabella rappresenta il fatto che un utente abbia
+ottenuto un determinato achievement in un determinato momento di un gioco.
+
+Nella relazione `user_game` la chiave è la coppia `{user, game}`; Gli attributi `purchase_date, hours_played` vengono determinaati dalla chiave.
+Ogni tupla all'interno della tabella rappresenta il fatto che un utente possieda un certo gioco.
+
+
+Un miglioramento generale delle prestazioni potremmo otternelo denormalizzando il database, introducendo delle colonne id di tipo numerico (es. una sequence),
+soprattutto per quelle tabelle che vengono usate frequentemente per `JOIN`;
+questo tipo di miglioramento è legato alla maggiore efficienza dei confronti su valori di tipo numerici piuttosto che di tipo stringa.
+
+### 6
+
+
 ## PARTE C
 ## PARTE D
