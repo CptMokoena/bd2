@@ -277,8 +277,44 @@ Un miglioramento generale delle prestazioni potremmo otternelo denormalizzando i
 soprattutto per quelle tabelle che vengono usate frequentemente per `JOIN`;
 questo tipo di miglioramento è legato alla maggiore efficienza dei confronti su valori di tipo numerici piuttosto che di tipo stringa.
 
-### 6
-
-
 ## PARTE C
+
+### 1
+
+#### Transazione 1
+Creazione di nuovo gioco con un achievement, assegnato ad un gruppo di utenti che provano il gioco
+  i. inserimento del nuovo gioco
+  ii. inserimento del nuovo achievement
+  iii. inserimento nella tabella `user_game` per legare il nuovo gioco ad alcuni utenti
+
+Livello di isolamento: *READ COMMITTED*
+L'obiettivo è garantire di non far vedere dati a metà; `READ COMMITTED` è sufficiente per prevenire letture sporche, garantendo che la transazione
+veda solo dati che sono stati committati da altre transazioni.
+
+Condizioni rispettate: a,c,e,g
+
+#### Transazione 2
+Statistiche sui tempi legati ai giochi (tempo medio / tempo totale)  e classifica dei giocatori che hanno giocato di più
+  i. Classifica dei giocatori che hanno giocato di più
+  ii. Calcolo del tempo di gioco medio e totale per gioco
+  iii. Classifica dei giocatori che hanno giocato di più (lettura ripetuta)
+
+Livello di isolamento: *REPEATABLE READ*
+In questo caso abbiamo bisogno di un livello di isolamento che impedisca
+ad altre transazioni di modificare la classifica tra la prima lettura e la seconda lettura.
+
+Condizioni rispettate: a,c,f,h
+
+#### Transazione 3
+Gestione del progresso di un utente in un gioco che sblocca un obbiettivo
+  i. Lettura delle ore di gioco attuali
+  ii. Aggiornamento delle ore giocate
+  iii. Inserimento di un nuovo obiettivo per l'utente
+
+Livello di isolamento: *SERIALIZABLE*
+In questo caso abbiamo bisogno del livello massimo di isolamento, in quanto queste tre query hanno una dipendenza logica stretta.
+Se una transazione (ad esempio un altro aggiornamento delle ore di gioco) intervenisse tra le operazioni, si potrebbe verificare un risultato inconsistente.
+
+Condizioni rispettate: a,c,e,f,g
+
 ## PARTE D
