@@ -1,3 +1,5 @@
+package org.filibertocardo.bd2;
+
 /*
 Codice di partenza per transazioni concorrenti —
 Adattato da Nikolas Augsten 
@@ -9,53 +11,6 @@ import java.util.concurrent.Executors;
 import java.sql.*;
 
 /**
- * Dummy transaction that prints a start message, waits for a random time
- * (up to 100ms) and finally prints a status message at termination.
- */
-
-class Transaction extends Thread {
-
-    // identifier of the transaction
-    int id;
-    Connection conn;
-
-    Transaction(int id, Connection conn) {
-        this.id = id;
-        this.conn = conn;
-    }
-
-    @Override
-    public void run() {
-        System.out.println("transaction " + id + " started");
-
-        // replace this with a transaction
-        int ms = (int) (Math.random() * 100);
-        try {
-            sleep(ms);
-        } catch (Exception e) {
-        }
-        ;
-        // end of portion to be replaced
-
-        /********** CODICE DA MODIFICARE PER REALIZZARE EFFETTIVE TRANSAZIONI *************
-         try{
-         // PreparedStatement st1 = conn.prepareStatement("ADD YOUR STATEMENT HERE");
-         // st1.executeUpdate();     SE LO STATEMENT E' UN UPDATE
-         // st1.executeQuery();       SE LO STATEMENT E' UNA QUERY
-         }catch(SQLException se){
-         se.printStackTrace();
-         }catch(Exception e){
-         e.printStackTrace();
-         }
-         *************************************************************************************/
-
-
-        System.out.println("transaction " + id + " terminated");
-    }
-
-}
-
-/**
  * <p>
  * Run numThreads transactions, where at most maxConcurrent transactions
  * can run in parallel.
@@ -64,17 +19,19 @@ class Transaction extends Thread {
  */
 public class ConcurrentTransactions {
 
-    public static void main(String[] args) {
+    private static final int MAX_TRANSACTIONS = 3;
+    private static final String DB_URL = "jdbc:postgresql://localhost:5432/bd2";
+    private static final String DB_USER = "bd2";
+    private static final String DB_PASS = "passwordSicura";
 
-        String url = "jdbc:postgresql://localhost:5432/bd2";
-        String user = "bd2";
-        String pass = "passwordSicura";
+    public static void main(String[] args) {
 
         Connection conn = null;
 
         try {
             Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(url, user, pass);
+            conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+            conn.setAutoCommit(false);
 //            PreparedStatement st = conn.prepareStatement("set search_path to account");
 //            st.executeUpdate();
         } catch (SQLException se) {
@@ -92,9 +49,15 @@ public class ConcurrentTransactions {
         int maxConcurrent = Integer.parseInt(args[1]);
 
         // create numThreads transactions
-        Transaction[] trans = new Transaction[numThreads];
+        BaseTransaction[] trans = new BaseTransaction[numThreads];
         for (int i = 0; i < trans.length; i++) {
-            trans[i] = new Transaction(i + 1, conn);
+            if (i % MAX_TRANSACTIONS == 0) {
+                trans[i] = new Transaction1(i+1, conn);
+            } else if (i % MAX_TRANSACTIONS == 1) {
+                trans[1] = new Transaction2(i+1, conn);
+            } else if (i % MAX_TRANSACTIONS == 2) {
+                trans[2] = new Transaction3(i+1, conn);
+            }
         }
 
         // start all transactions using a connection pool
@@ -122,6 +85,14 @@ public class ConcurrentTransactions {
          e.printStackTrace();
          }
          **************************************/
+
+        try {
+            conn.close();
+        } catch(SQLException se){
+            se.printStackTrace();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }
 
