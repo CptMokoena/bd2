@@ -1,3 +1,15 @@
+-- (a) almeno una query con condizione di selezione ad alta selettività
+-- (b) almeno una query con condizione di selezione a bassa selettività
+-- (c) almeno una query con join di due tabelle
+-- (d) almeno una query con join di tre tabelle
+-- (e) almeno una query con raggruppamento
+-- (f) almeno una query con sottointerrogazione semplice
+-- (g) almeno una query con sottointerrogazione correlata
+-- (h) almeno una query con almeno un join e almeno due condizioni di selezione
+-- (i) almeno un attributo deve comparire nelle condizioni di selezione di almeno due query
+-- (l) almeno un attributo per ogni tabella deve essere coinvolto in una condizione di selezione
+-- (m) almeno una query deve contenere la clausola DISTINCT
+
 -- 1) Query che restituisce gli utenti e il numero di giochi che posseggono,
 -- i quali possiedono almeno un achievements
 -- Condizioni rispettate : a, c, d, e, g,
