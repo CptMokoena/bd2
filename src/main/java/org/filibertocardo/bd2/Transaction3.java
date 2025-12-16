@@ -5,12 +5,14 @@ import java.sql.SQLException;
 
 public class Transaction3 extends BaseTransaction {
 
-    public Transaction3(int transactionId, Connection conn) {
-        super(transactionId, conn);
+    public Transaction3(int transactionId) {
+        super(transactionId);
     }
 
     @Override
     protected void executeTransaction() throws SQLException {
+        this.conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+
         String user = "user_1";
         String game = "OChEQjTJNNcoYhAJoO4zdjiGxA4oF8fJEgAM";
         String achievement = "V2_My_First_Wargear";
@@ -21,6 +23,8 @@ public class Transaction3 extends BaseTransaction {
         s1.setString(1, user);
         s1.setString(2, game);
         s1.execute();
+        
+        simulateOps();
 
         var s2 = this.conn.prepareStatement(
                 "update user_game set hours_played = hours_played + ?\n" +
@@ -30,6 +34,8 @@ public class Transaction3 extends BaseTransaction {
         s2.setString(2, user);
         s2.setString(3, game);
         s2.executeUpdate();
+
+        simulateOps();
 
         var s3 = this.conn.prepareStatement(
                 "insert into user_achievement (\"user\", achievement, unlocked_date, unlocked_at_played_hours )\n" +

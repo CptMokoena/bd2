@@ -2,16 +2,32 @@ package org.filibertocardo.bd2;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Random;
 
 public class Transaction1 extends BaseTransaction {
 
-    public Transaction1(int transactionId, Connection conn) {
-        super(transactionId, conn);
+    public Transaction1(int transactionId) {
+        super(transactionId);
+    }
+
+    protected String generateRandomString(int length) {
+        String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+        StringBuilder salt = new StringBuilder();
+        Random rnd = new Random();
+        while (salt.length() < length) { // length of the random string.
+            int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+            salt.append(SALTCHARS.charAt(index));
+        }
+        String saltStr = salt.toString();
+        return saltStr;
+
     }
     
     @Override
     protected void executeTransaction() throws SQLException {
-        String game = "OChEQjTJNNcoYhAJoO4zdjiGxA4oF8fJEgAM";
+        this.conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+
+        String game = generateRandomString(36);
 
         var s1 = this.conn.prepareStatement(
                 "insert into games (code, name, description, price) values(?, ?, ?, ?)"
@@ -22,14 +38,18 @@ public class Transaction1 extends BaseTransaction {
         s1.setDouble(4, 27.99);
         s1.executeUpdate();
 
+        simulateOps();
+
         var s2 = this.conn.prepareStatement(
                 "insert into achievements (\"name\", description, difficulty, game) values(?, ?, ?, ?)"
         );
-        s2.setString(1, "V2_My_First_Wargear");
+        s2.setString(1, generateRandomString(19));
         s2.setString(2, "Equip a Common item");
         s2.setInt(3, 1);
         s2.setString(4, game);
         s2.executeUpdate();
+
+        simulateOps();
 
         var s3 = this.conn.prepareStatement(
                 "insert into user_game (\"user\", game, purchase_date, hours_played ) \n" +

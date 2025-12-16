@@ -20,26 +20,11 @@ import java.sql.*;
 public class ConcurrentTransactions {
 
     private static final int MAX_TRANSACTIONS = 3;
-    private static final String DB_URL = "jdbc:postgresql://localhost:5432/bd2";
-    private static final String DB_USER = "bd2";
-    private static final String DB_PASS = "passwordSicura";
+    public static final String DB_URL = "jdbc:postgresql://localhost:5432/bd2";
+    public static final String DB_USER = "bd2";
+    public static final String DB_PASS = "passwordSicura";
 
     public static void main(String[] args) {
-
-        Connection conn = null;
-
-        try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
-            conn.setAutoCommit(false);
-//            PreparedStatement st = conn.prepareStatement("set search_path to account");
-//            st.executeUpdate();
-        } catch (SQLException se) {
-            se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         // read command line parameters
         if (args.length != 2) {
             System.err.println("params: numThreads maxConcurrent");
@@ -48,15 +33,17 @@ public class ConcurrentTransactions {
         int numThreads = Integer.parseInt(args[0]);
         int maxConcurrent = Integer.parseInt(args[1]);
 
+        System.out.println(String.format("Starting program with numThread=%d and maxConcurrent=%d", numThreads, maxConcurrent));
+
         // create numThreads transactions
         BaseTransaction[] trans = new BaseTransaction[numThreads];
         for (int i = 0; i < trans.length; i++) {
             if (i % MAX_TRANSACTIONS == 0) {
-                trans[i] = new Transaction1(i+1, conn);
+                trans[i] = new Transaction1(i+1);
             } else if (i % MAX_TRANSACTIONS == 1) {
-                trans[1] = new Transaction2(i+1, conn);
+                trans[1] = new Transaction2(i+1);
             } else if (i % MAX_TRANSACTIONS == 2) {
-                trans[2] = new Transaction3(i+1, conn);
+                trans[2] = new Transaction3(i+1);
             }
         }
 
@@ -85,14 +72,6 @@ public class ConcurrentTransactions {
          e.printStackTrace();
          }
          **************************************/
-
-        try {
-            conn.close();
-        } catch(SQLException se){
-            se.printStackTrace();
-        } catch(Exception e){
-            e.printStackTrace();
-        }
     }
 }
 
