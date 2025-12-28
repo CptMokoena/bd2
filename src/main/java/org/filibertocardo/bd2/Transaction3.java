@@ -7,15 +7,14 @@ public class Transaction3 extends BaseTransaction {
 
     public Transaction3(int transactionId) {
         super(transactionId);
+        this.isolationLevel = Connection.TRANSACTION_SERIALIZABLE;
     }
 
     @Override
     protected void executeTransaction() throws SQLException {
-        this.conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-
         String user = "user_1";
         String game = "OChEQjTJNNcoYhAJoO4zdjiGxA4oF8fJEgAM";
-        String achievement = "V2_My_First_Wargear";
+        String achievement = generateRandomString(19);
 
         var s1 = this.conn.prepareStatement(
                 "select hours_played from user_game where \"user\" = ? and game = ?"

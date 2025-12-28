@@ -8,25 +8,11 @@ public class Transaction1 extends BaseTransaction {
 
     public Transaction1(int transactionId) {
         super(transactionId);
-    }
-
-    protected String generateRandomString(int length) {
-        String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
-        StringBuilder salt = new StringBuilder();
-        Random rnd = new Random();
-        while (salt.length() < length) { // length of the random string.
-            int index = (int) (rnd.nextFloat() * SALTCHARS.length());
-            salt.append(SALTCHARS.charAt(index));
-        }
-        String saltStr = salt.toString();
-        return saltStr;
-
+        this.isolationLevel = Connection.TRANSACTION_READ_COMMITTED;
     }
     
     @Override
     protected void executeTransaction() throws SQLException {
-        this.conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-
         String game = generateRandomString(36);
 
         var s1 = this.conn.prepareStatement(
@@ -54,7 +40,7 @@ public class Transaction1 extends BaseTransaction {
         var s3 = this.conn.prepareStatement(
                 "insert into user_game (\"user\", game, purchase_date, hours_played ) \n" +
                     "select u.username, ?, now(), 0.0 \n" +
-                    "from users u where where u.email ilike ?"
+                    "from users u where u.email ilike ?"
         );
         s3.setString(1, game);
         s3.setString(2, "%beta_tester%");

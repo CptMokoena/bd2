@@ -7,12 +7,11 @@ public class Transaction2 extends BaseTransaction {
 
     public Transaction2(int transactionId) {
         super(transactionId);
+        this.isolationLevel = Connection.TRANSACTION_REPEATABLE_READ;
     }
 
     @Override
     protected void executeTransaction() throws SQLException {
-        this.conn.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
-
         var s1 = this.conn.prepareStatement(
                 "select \"user\", sum(hours_played) as total_user_hours from user_game group by \"user\" order by total_user_hours desc"
         );

@@ -38,19 +38,25 @@ public class ConcurrentTransactions {
         // create numThreads transactions
         BaseTransaction[] trans = new BaseTransaction[numThreads];
         for (int i = 0; i < trans.length; i++) {
-            if (i % MAX_TRANSACTIONS == 0) {
+            int transactionType = i % MAX_TRANSACTIONS;
+            // System.out.printf("Creating transaction of type %d for %d\n", transactionType, i);
+            if (transactionType == 0) {
                 trans[i] = new Transaction1(i+1);
-            } else if (i % MAX_TRANSACTIONS == 1) {
-                trans[1] = new Transaction2(i+1);
-            } else if (i % MAX_TRANSACTIONS == 2) {
-                trans[2] = new Transaction3(i+1);
+            } else if (transactionType == 1) {
+                trans[i] = new Transaction2(i+1);
+            } else if (transactionType == 2) {
+                trans[i] = new Transaction3(i+1);
             }
         }
+
+        System.out.printf("Executing transactions...\n\n\n");
 
         // start all transactions using a connection pool
         ExecutorService pool = Executors.newFixedThreadPool(maxConcurrent);
         for (int i = 0; i < trans.length; i++) {
-            pool.execute(trans[i]);
+            BaseTransaction currentTransaction = trans[i];
+            // System.out.printf("Executing transaction %s in %d\n", currentTransaction, i);
+            pool.execute(currentTransaction);
         }
         pool.shutdown(); // end program after all transactions are done
 
