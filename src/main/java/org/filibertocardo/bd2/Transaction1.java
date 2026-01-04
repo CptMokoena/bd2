@@ -2,18 +2,19 @@ package org.filibertocardo.bd2;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Random;
 
 public class Transaction1 extends BaseTransaction {
 
     public Transaction1(int transactionId) {
         super(transactionId);
-        this.isolationLevel = Connection.TRANSACTION_READ_COMMITTED;
+        this.isolationLevel = Connection.TRANSACTION_SERIALIZABLE;
     }
     
     @Override
     protected void executeTransaction() throws SQLException {
         String game = generateRandomString(36);
+
+        log("Executing first query");
 
         var s1 = this.conn.prepareStatement(
                 "insert into games (code, name, description, price) values(?, ?, ?, ?)"
@@ -26,6 +27,8 @@ public class Transaction1 extends BaseTransaction {
 
         simulateOps();
 
+        log("Executing second query");
+
         var s2 = this.conn.prepareStatement(
                 "insert into achievements (\"name\", description, difficulty, game) values(?, ?, ?, ?)"
         );
@@ -36,6 +39,8 @@ public class Transaction1 extends BaseTransaction {
         s2.executeUpdate();
 
         simulateOps();
+
+        log("Executing third query");
 
         var s3 = this.conn.prepareStatement(
                 "insert into user_game (\"user\", game, purchase_date, hours_played ) \n" +

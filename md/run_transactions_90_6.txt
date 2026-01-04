@@ -1,0 +1,454 @@
+Starting program with numThread=90 and maxConcurrent=6
+Executing transactions...
+
+
+21:18:049.686 - [5] Transaction2 : started
+21:18:049.686 - [2] Transaction2 : started
+21:18:049.694 - [4] Transaction1 : started
+21:18:049.695 - [1] Transaction1 : started
+21:18:049.716 - [6] Transaction3 : started
+21:18:049.716 - [3] Transaction3 : started
+21:18:049.758 - [4] Transaction1 : Executing first query
+21:18:049.785 - [5] Transaction2 : Executing first query
+21:18:049.794 - [2] Transaction2 : Executing first query
+21:18:049.798 - [6] Transaction3 : Executing first query
+21:18:049.819 - [3] Transaction3 : Executing first query
+21:18:049.821 - [1] Transaction1 : Executing first query
+21:18:050.426 - [1] Transaction1 : Executing second query
+21:18:050.464 - [4] Transaction1 : Executing second query
+21:18:050.649 - [3] Transaction3 : Executing second query
+21:18:050.674 - [6] Transaction3 : Executing second query
+21:18:050.817 - [3] Transaction3 : Executing third query
+21:18:050.822 - [6] Transaction3 : Executing third query
+21:18:051.44 - [4] Transaction1 : Executing third query
+21:18:051.93 - [1] Transaction1 : Executing third query
+21:18:051.569 - [3] Transaction3 : terminated
+21:18:051.687 - [6] Transaction3 : terminated
+21:18:051.754 - [7] Transaction1 : started
+21:18:051.874 - [7] Transaction1 : Executing first query
+21:18:052.35 - [8] Transaction2 : started
+21:18:052.84 - [7] Transaction1 : Executing second query
+21:18:052.141 - [8] Transaction2 : Executing first query
+21:18:052.286 - [7] Transaction1 : Executing third query
+21:18:052.925 - [1] Transaction1 : terminated
+21:18:052.942 - [7] Transaction1 : terminated
+21:18:052.957 - [4] Transaction1 : terminated
+21:18:053.48 - [9] Transaction3 : started
+21:18:053.52 - [11] Transaction2 : started
+21:18:053.53 - [10] Transaction1 : started
+21:18:053.64 - [9] Transaction3 : Executing first query
+21:18:053.117 - [9] Transaction3 : Executing second query
+21:18:053.121 - [11] Transaction2 : Executing first query
+21:18:053.127 - [10] Transaction1 : Executing first query
+21:18:053.161 - [10] Transaction1 : Executing second query
+21:18:053.183 - [9] Transaction3 : Executing third query
+21:18:053.245 - [10] Transaction1 : Executing third query
+21:18:053.303 - [9] Transaction3 : terminated
+21:18:053.417 - [12] Transaction3 : started
+21:18:053.467 - [12] Transaction3 : Executing first query
+21:18:053.508 - [12] Transaction3 : Executing second query
+21:18:053.566 - [12] Transaction3 : Executing third query
+21:18:053.613 - [10] Transaction1 : terminated
+21:18:053.647 - [12] Transaction3 : terminated
+21:18:053.690 - [13] Transaction1 : started
+21:18:053.703 - [14] Transaction2 : started
+21:18:053.748 - [13] Transaction1 : Executing first query
+21:18:053.790 - [14] Transaction2 : Executing first query
+21:18:053.889 - [13] Transaction1 : Executing second query
+21:18:054.24 - [13] Transaction1 : Executing third query
+21:18:054.329 - [13] Transaction1 : terminated
+21:18:054.454 - [15] Transaction3 : started
+21:18:054.466 - [15] Transaction3 : Executing first query
+21:18:054.486 - [15] Transaction3 : Executing second query
+21:18:054.531 - [15] Transaction3 : Executing third query
+21:18:054.638 - [15] Transaction3 : terminated
+21:18:054.695 - [16] Transaction1 : started
+21:18:054.794 - [16] Transaction1 : Executing first query
+21:18:054.950 - [16] Transaction1 : Executing second query
+21:18:055.119 - [16] Transaction1 : Executing third query
+21:18:055.414 - [16] Transaction1 : terminated
+21:18:055.464 - [17] Transaction2 : started
+21:18:055.532 - [17] Transaction2 : Executing first query
+21:21:019.121 - [8] Transaction2 : Executing second query
+21:21:019.122 - [17] Transaction2 : Executing second query
+21:21:019.133 - [14] Transaction2 : Executing second query
+21:21:019.142 - [2] Transaction2 : Executing second query
+21:21:019.173 - [11] Transaction2 : Executing second query
+21:21:019.176 - [5] Transaction2 : Executing second query
+21:21:024.582 - [14] Transaction2 : Executing third query
+21:21:024.599 - [2] Transaction2 : Executing third query
+21:21:024.621 - [17] Transaction2 : Executing third query
+21:21:025.116 - [5] Transaction2 : Executing third query
+21:21:025.409 - [8] Transaction2 : Executing third query
+21:21:025.954 - [11] Transaction2 : Executing third query
+21:21:037.903 - [14] Transaction2 : terminated
+21:21:037.909 - [8] Transaction2 : terminated
+21:21:037.916 - [5] Transaction2 : terminated
+21:21:037.918 - [17] Transaction2 : terminated
+21:21:037.933 - [2] Transaction2 : terminated
+21:21:037.933 - [11] Transaction2 : terminated
+21:21:038.518 - [23] Transaction2 : started
+21:21:038.553 - [21] Transaction3 : started
+21:21:038.573 - [20] Transaction2 : started
+21:21:038.573 - [19] Transaction1 : started
+21:21:038.573 - [18] Transaction3 : started
+21:21:038.573 - [22] Transaction1 : started
+21:21:038.585 - [21] Transaction3 : Executing first query
+21:21:038.618 - [18] Transaction3 : Executing first query
+21:21:038.653 - [19] Transaction1 : Executing first query
+21:21:038.653 - [20] Transaction2 : Executing first query
+21:21:038.654 - [22] Transaction1 : Executing first query
+21:21:038.656 - [23] Transaction2 : Executing first query
+21:21:039.167 - [19] Transaction1 : Executing second query
+21:21:039.174 - [22] Transaction1 : Executing second query
+21:21:039.257 - [18] Transaction3 : Executing second query
+21:21:039.291 - [21] Transaction3 : Executing second query
+21:21:039.382 - [21] Transaction3 : Executing third query
+21:21:039.473 - [18] Transaction3 : Executing third query
+21:21:039.514 - [22] Transaction1 : Executing third query
+21:21:039.537 - [19] Transaction1 : Executing third query
+21:21:039.680 - [18] Transaction3 : terminated
+21:21:039.723 - [21] Transaction3 : terminated
+21:21:039.795 - [25] Transaction1 : started
+21:21:039.808 - [24] Transaction3 : started
+21:21:039.839 - [25] Transaction1 : Executing first query
+21:21:039.868 - [25] Transaction1 : Executing second query
+21:21:039.881 - [24] Transaction3 : Executing first query
+21:21:039.976 - [24] Transaction3 : Executing second query
+21:21:040.56 - [24] Transaction3 : Executing third query
+21:21:040.82 - [25] Transaction1 : Executing third query
+21:21:040.214 - [24] Transaction3 : terminated
+21:21:040.335 - [26] Transaction2 : started
+21:21:040.446 - [26] Transaction2 : Executing first query
+21:21:041.372 - [19] Transaction1 : terminated
+21:21:041.395 - [22] Transaction1 : terminated
+21:21:041.399 - [25] Transaction1 : terminated
+21:21:041.486 - [27] Transaction3 : started
+21:21:041.510 - [28] Transaction1 : started
+21:21:041.515 - [29] Transaction2 : started
+21:21:041.568 - [29] Transaction2 : Executing first query
+21:21:041.573 - [27] Transaction3 : Executing first query
+21:21:041.610 - [28] Transaction1 : Executing first query
+21:21:041.642 - [27] Transaction3 : Executing second query
+21:21:041.669 - [27] Transaction3 : Executing third query
+21:21:041.733 - [27] Transaction3 : terminated
+21:21:041.766 - [28] Transaction1 : Executing second query
+21:21:041.779 - [30] Transaction3 : started
+21:21:041.800 - [30] Transaction3 : Executing first query
+21:21:041.869 - [30] Transaction3 : Executing second query
+21:21:041.905 - [30] Transaction3 : Executing third query
+21:21:041.951 - [30] Transaction3 : terminated
+21:21:041.983 - [28] Transaction1 : Executing third query
+21:21:042.67 - [31] Transaction1 : started
+21:21:042.79 - [31] Transaction1 : Executing first query
+21:21:042.196 - [31] Transaction1 : Executing second query
+21:21:042.259 - [28] Transaction1 : terminated
+21:21:042.318 - [32] Transaction2 : started
+21:21:042.349 - [31] Transaction1 : Executing third query
+21:21:042.381 - [32] Transaction2 : Executing first query
+21:21:042.514 - [31] Transaction1 : terminated
+21:21:042.572 - [33] Transaction3 : started
+21:21:042.586 - [33] Transaction3 : Executing first query
+21:21:042.637 - [33] Transaction3 : Executing second query
+21:21:042.686 - [33] Transaction3 : Executing third query
+21:21:042.808 - [33] Transaction3 : terminated
+21:21:042.903 - [34] Transaction1 : started
+21:21:042.924 - [34] Transaction1 : Executing first query
+21:21:042.985 - [34] Transaction1 : Executing second query
+21:21:043.127 - [34] Transaction1 : Executing third query
+21:21:043.377 - [34] Transaction1 : terminated
+21:21:043.433 - [35] Transaction2 : started
+21:21:043.515 - [35] Transaction2 : Executing first query
+21:21:053.457 - [29] Transaction2 : Executing second query
+21:21:053.906 - [23] Transaction2 : Executing second query
+21:21:053.929 - [35] Transaction2 : Executing second query
+21:21:054.559 - [20] Transaction2 : Executing second query
+21:21:054.505 - [26] Transaction2 : Executing second query
+21:21:054.597 - [32] Transaction2 : Executing second query
+21:21:057.585 - [23] Transaction2 : Executing third query
+21:21:058.221 - [29] Transaction2 : Executing third query
+21:22:000.103 - [20] Transaction2 : Executing third query
+21:22:000.157 - [35] Transaction2 : Executing third query
+21:22:000.157 - [26] Transaction2 : Executing third query
+21:22:000.646 - [32] Transaction2 : Executing third query
+21:22:003.582 - [23] Transaction2 : terminated
+21:22:004.763 - [36] Transaction3 : started
+21:22:004.824 - [20] Transaction2 : terminated
+21:22:004.836 - [29] Transaction2 : terminated
+21:22:005.20 - [26] Transaction2 : terminated
+21:22:005.65 - [36] Transaction3 : Executing first query
+21:22:005.76 - [32] Transaction2 : terminated
+21:22:005.124 - [37] Transaction1 : started
+21:22:005.130 - [38] Transaction2 : started
+21:22:005.147 - [36] Transaction3 : Executing second query
+21:22:005.182 - [39] Transaction3 : started
+21:22:005.192 - [40] Transaction1 : started
+21:22:005.194 - [36] Transaction3 : Executing third query
+21:22:005.218 - [37] Transaction1 : Executing first query
+21:22:005.230 - [38] Transaction2 : Executing first query
+21:22:005.249 - [36] Transaction3 : terminated
+21:22:005.260 - [39] Transaction3 : Executing first query
+21:22:005.286 - [40] Transaction1 : Executing first query
+21:22:005.315 - [37] Transaction1 : Executing second query
+21:22:005.343 - [39] Transaction3 : Executing second query
+21:22:005.355 - [40] Transaction1 : Executing second query
+21:22:005.388 - [39] Transaction3 : Executing third query
+21:22:005.418 - [41] Transaction2 : started
+21:22:005.442 - [37] Transaction1 : Executing third query
+21:22:005.473 - [41] Transaction2 : Executing first query
+21:22:005.503 - [40] Transaction1 : Executing third query
+21:22:005.582 - [39] Transaction3 : terminated
+21:22:005.942 - [42] Transaction3 : started
+21:22:006.30 - [35] Transaction2 : terminated
+21:22:006.136 - [42] Transaction3 : Executing first query
+21:22:006.163 - [43] Transaction1 : started
+21:22:006.234 - [43] Transaction1 : Executing first query
+21:22:006.280 - [42] Transaction3 : Executing second query
+21:22:006.332 - [42] Transaction3 : Executing third query
+21:22:006.390 - [43] Transaction1 : Executing second query
+21:22:006.462 - [43] Transaction1 : Executing third query
+21:22:006.503 - [37] Transaction1 : terminated
+21:22:006.539 - [42] Transaction3 : terminated
+21:22:006.539 - [40] Transaction1 : terminated
+21:22:006.654 - [44] Transaction2 : started
+21:22:006.673 - [46] Transaction1 : started
+21:22:006.698 - [44] Transaction2 : Executing first query
+21:22:006.713 - [45] Transaction3 : started
+21:22:006.747 - [46] Transaction1 : Executing first query
+21:22:006.815 - [45] Transaction3 : Executing first query
+21:22:006.884 - [46] Transaction1 : Executing second query
+21:22:006.958 - [45] Transaction3 : Executing second query
+21:22:006.971 - [43] Transaction1 : terminated
+21:22:006.997 - [45] Transaction3 : Executing third query
+21:22:007.39 - [47] Transaction2 : started
+21:22:007.62 - [47] Transaction2 : Executing first query
+21:22:007.86 - [46] Transaction1 : Executing third query
+21:22:007.120 - [45] Transaction3 : terminated
+21:22:007.155 - [48] Transaction3 : started
+21:22:007.201 - [48] Transaction3 : Executing first query
+21:22:007.237 - [48] Transaction3 : Executing second query
+21:22:007.270 - [48] Transaction3 : Executing third query
+21:22:007.323 - [46] Transaction1 : terminated
+21:22:007.368 - [49] Transaction1 : started
+21:22:007.449 - [49] Transaction1 : Executing first query
+21:22:007.491 - [48] Transaction3 : terminated
+21:22:007.539 - [49] Transaction1 : Executing second query
+21:22:007.539 - [50] Transaction2 : started
+21:22:007.577 - [50] Transaction2 : Executing first query
+21:22:007.676 - [49] Transaction1 : Executing third query
+21:22:007.941 - [49] Transaction1 : terminated
+21:22:008.35 - [51] Transaction3 : started
+21:22:008.91 - [51] Transaction3 : Executing first query
+21:22:008.173 - [51] Transaction3 : Executing second query
+21:22:008.258 - [51] Transaction3 : Executing third query
+21:22:008.400 - [51] Transaction3 : terminated
+21:22:008.444 - [52] Transaction1 : started
+21:22:008.453 - [52] Transaction1 : Executing first query
+21:22:008.573 - [52] Transaction1 : Executing second query
+21:22:008.757 - [52] Transaction1 : Executing third query
+21:22:009.09 - [52] Transaction1 : terminated
+21:22:009.52 - [53] Transaction2 : started
+21:22:009.149 - [53] Transaction2 : Executing first query
+21:22:011.923 - [41] Transaction2 : Executing second query
+21:22:012.460 - [38] Transaction2 : Executing second query
+21:22:012.617 - [50] Transaction2 : Executing second query
+21:22:012.618 - [44] Transaction2 : Executing second query
+21:22:012.618 - [47] Transaction2 : Executing second query
+21:22:013.464 - [53] Transaction2 : Executing second query
+21:22:015.364 - [41] Transaction2 : Executing third query
+21:22:015.373 - [47] Transaction2 : Executing third query
+21:22:015.416 - [44] Transaction2 : Executing third query
+21:22:015.723 - [38] Transaction2 : Executing third query
+21:22:016.325 - [50] Transaction2 : Executing third query
+21:22:017.921 - [53] Transaction2 : Executing third query
+21:22:018.63 - [47] Transaction2 : terminated
+21:22:018.581 - [54] Transaction3 : started
+21:22:018.635 - [44] Transaction2 : terminated
+21:22:018.647 - [54] Transaction3 : Executing first query
+21:22:018.835 - [54] Transaction3 : Executing second query
+21:22:018.870 - [38] Transaction2 : terminated
+21:22:018.889 - [55] Transaction1 : started
+21:22:018.923 - [54] Transaction3 : Executing third query
+21:22:018.936 - [56] Transaction2 : started
+21:22:018.986 - [41] Transaction2 : terminated
+21:22:019.50 - [55] Transaction1 : Executing first query
+21:22:019.51 - [54] Transaction3 : terminated
+21:22:019.54 - [56] Transaction2 : Executing first query
+21:22:019.82 - [57] Transaction3 : started
+21:22:019.114 - [58] Transaction1 : started
+21:22:019.154 - [58] Transaction1 : Executing first query
+21:22:019.159 - [55] Transaction1 : Executing second query
+21:22:019.175 - [57] Transaction3 : Executing first query
+21:22:019.287 - [57] Transaction3 : Executing second query
+21:22:019.290 - [55] Transaction1 : Executing third query
+21:22:019.469 - [58] Transaction1 : Executing second query
+21:22:019.474 - [57] Transaction3 : Executing third query
+21:22:019.576 - [55] Transaction1 : terminated
+21:22:019.629 - [57] Transaction3 : terminated
+21:22:019.656 - [50] Transaction2 : terminated
+21:22:019.664 - [58] Transaction1 : Executing third query
+21:22:019.686 - [59] Transaction2 : started
+21:22:019.709 - [60] Transaction3 : started
+21:22:019.739 - [59] Transaction2 : Executing first query
+21:22:019.740 - [61] Transaction1 : started
+21:22:019.772 - [60] Transaction3 : Executing first query
+21:22:019.797 - [61] Transaction1 : Executing first query
+21:22:019.850 - [60] Transaction3 : Executing second query
+21:22:019.896 - [61] Transaction1 : Executing second query
+21:22:019.925 - [60] Transaction3 : Executing third query
+21:22:020.16 - [60] Transaction3 : terminated
+21:22:020.41 - [61] Transaction1 : Executing third query
+21:22:020.92 - [58] Transaction1 : terminated
+21:22:020.103 - [62] Transaction2 : started
+21:22:020.218 - [63] Transaction3 : started
+21:22:020.221 - [62] Transaction2 : Executing first query
+21:22:020.238 - [63] Transaction3 : Executing first query
+21:22:020.336 - [63] Transaction3 : Executing second query
+21:22:020.483 - [63] Transaction3 : Executing third query
+21:22:020.697 - [63] Transaction3 : terminated
+21:22:020.833 - [61] Transaction1 : terminated
+21:22:020.839 - [64] Transaction1 : started
+21:22:020.941 - [65] Transaction2 : started
+21:22:020.949 - [65] Transaction2 : Executing first query
+21:22:020.949 - [64] Transaction1 : Executing first query
+21:22:021.163 - [64] Transaction1 : Executing second query
+21:22:022.30 - [53] Transaction2 : terminated
+21:22:022.30 - [64] Transaction1 : Executing third query
+21:22:022.261 - [66] Transaction3 : started
+21:22:022.398 - [66] Transaction3 : Executing first query
+21:22:022.417 - [64] Transaction1 : terminated
+21:22:022.466 - [67] Transaction1 : started
+21:22:022.492 - [66] Transaction3 : Executing second query
+21:22:022.644 - [67] Transaction1 : Executing first query
+21:22:022.646 - [66] Transaction3 : Executing third query
+21:22:022.647 - [56] Transaction2 : Executing second query
+21:22:022.734 - [67] Transaction1 : Executing second query
+21:22:022.751 - [66] Transaction3 : terminated
+21:22:022.846 - [67] Transaction1 : Executing third query
+21:22:023.64 - [68] Transaction2 : started
+21:22:023.74 - [59] Transaction2 : Executing second query
+21:22:023.110 - [68] Transaction2 : Executing first query
+21:22:023.336 - [62] Transaction2 : Executing second query
+21:22:023.566 - [67] Transaction1 : terminated
+21:22:023.908 - [69] Transaction3 : started
+21:22:024.20 - [69] Transaction3 : Executing first query
+21:22:024.35 - [69] Transaction3 : Executing second query
+21:22:024.171 - [56] Transaction2 : Executing third query
+21:22:024.171 - [69] Transaction3 : Executing third query
+21:22:024.261 - [65] Transaction2 : Executing second query
+21:22:024.338 - [69] Transaction3 : terminated
+21:22:024.545 - [70] Transaction1 : started
+21:22:024.617 - [59] Transaction2 : Executing third query
+21:22:024.671 - [70] Transaction1 : Executing first query
+21:22:024.769 - [70] Transaction1 : Executing second query
+21:22:025.72 - [62] Transaction2 : Executing third query
+21:22:025.170 - [70] Transaction1 : Executing third query
+21:22:025.630 - [68] Transaction2 : Executing second query
+21:22:026.480 - [65] Transaction2 : Executing third query
+21:22:026.682 - [56] Transaction2 : terminated
+21:22:026.915 - [71] Transaction2 : started
+21:22:026.933 - [71] Transaction2 : Executing first query
+21:22:027.253 - [62] Transaction2 : terminated
+21:22:027.316 - [68] Transaction2 : Executing third query
+21:22:027.529 - [59] Transaction2 : terminated
+21:22:027.571 - [70] Transaction1 : terminated
+21:22:027.645 - [72] Transaction3 : started
+21:22:027.676 - [74] Transaction2 : started
+21:22:027.676 - [73] Transaction1 : started
+21:22:027.701 - [73] Transaction1 : Executing first query
+21:22:027.748 - [72] Transaction3 : Executing first query
+21:22:027.753 - [73] Transaction1 : Executing second query
+21:22:027.755 - [74] Transaction2 : Executing first query
+21:22:027.873 - [72] Transaction3 : Executing second query
+21:22:027.888 - [73] Transaction1 : Executing third query
+21:22:028.49 - [72] Transaction3 : Executing third query
+21:22:028.106 - [72] Transaction3 : terminated
+21:22:028.142 - [73] Transaction1 : terminated
+21:22:028.163 - [75] Transaction3 : started
+21:22:028.186 - [76] Transaction1 : started
+21:22:028.269 - [75] Transaction3 : Executing first query
+21:22:028.273 - [76] Transaction1 : Executing first query
+21:22:028.290 - [75] Transaction3 : Executing second query
+21:22:028.318 - [76] Transaction1 : Executing second query
+21:22:028.322 - [75] Transaction3 : Executing third query
+21:22:028.430 - [76] Transaction1 : Executing third query
+21:22:028.451 - [75] Transaction3 : terminated
+21:22:028.739 - [77] Transaction2 : started
+21:22:028.829 - [77] Transaction2 : Executing first query
+21:22:029.422 - [76] Transaction1 : terminated
+21:22:029.456 - [68] Transaction2 : terminated
+21:22:029.480 - [71] Transaction2 : Executing second query
+21:22:029.675 - [79] Transaction1 : started
+21:22:029.681 - [78] Transaction3 : started
+21:22:029.745 - [79] Transaction1 : Executing first query
+21:22:029.818 - [78] Transaction3 : Executing first query
+21:22:029.833 - [78] Transaction3 : Executing second query
+21:22:029.877 - [79] Transaction1 : Executing second query
+21:22:029.892 - [78] Transaction3 : Executing third query
+21:22:029.900 - [65] Transaction2 : terminated
+21:22:029.935 - [74] Transaction2 : Executing second query
+21:22:030.16 - [80] Transaction2 : started
+21:22:030.28 - [79] Transaction1 : Executing third query
+21:22:030.34 - [80] Transaction2 : Executing first query
+21:22:030.92 - [78] Transaction3 : terminated
+21:22:030.678 - [81] Transaction3 : started
+21:22:030.783 - [81] Transaction3 : Executing first query
+21:22:030.893 - [79] Transaction1 : terminated
+21:22:030.938 - [81] Transaction3 : Executing second query
+21:22:030.957 - [82] Transaction1 : started
+21:22:031.60 - [81] Transaction3 : Executing third query
+21:22:031.65 - [82] Transaction1 : Executing first query
+21:22:031.201 - [81] Transaction3 : terminated
+21:22:031.230 - [77] Transaction2 : Executing second query
+21:22:031.233 - [83] Transaction2 : started
+21:22:031.263 - [82] Transaction1 : Executing second query
+21:22:031.278 - [83] Transaction2 : Executing first query
+21:22:031.311 - [71] Transaction2 : Executing third query
+21:22:031.402 - [82] Transaction1 : Executing third query
+21:22:032.128 - [74] Transaction2 : Executing third query
+21:22:032.729 - [77] Transaction2 : Executing third query
+21:22:032.809 - [82] Transaction1 : terminated
+21:22:033.268 - [80] Transaction2 : Executing second query
+21:22:033.290 - [84] Transaction3 : started
+21:22:033.374 - [84] Transaction3 : Executing first query
+21:22:033.672 - [83] Transaction2 : Executing second query
+21:22:033.687 - [84] Transaction3 : Executing second query
+21:22:033.759 - [84] Transaction3 : Executing third query
+21:22:033.842 - [84] Transaction3 : terminated
+21:22:034.494 - [71] Transaction2 : terminated
+21:22:034.539 - [74] Transaction2 : terminated
+21:22:034.657 - [85] Transaction1 : started
+21:22:034.690 - [86] Transaction2 : started
+21:22:034.692 - [87] Transaction3 : started
+21:22:034.698 - [85] Transaction1 : Executing first query
+21:22:034.773 - [86] Transaction2 : Executing first query
+21:22:034.779 - [87] Transaction3 : Executing first query
+21:22:034.828 - [85] Transaction1 : Executing second query
+21:22:034.861 - [87] Transaction3 : Executing second query
+21:22:035.39 - [87] Transaction3 : Executing third query
+21:22:035.61 - [85] Transaction1 : Executing third query
+21:22:035.180 - [87] Transaction3 : terminated
+21:22:035.267 - [88] Transaction1 : started
+21:22:035.291 - [80] Transaction2 : Executing third query
+21:22:035.308 - [83] Transaction2 : Executing third query
+21:22:035.337 - [88] Transaction1 : Executing first query
+21:22:035.409 - [88] Transaction1 : Executing second query
+21:22:035.410 - [85] Transaction1 : terminated
+21:22:035.445 - [89] Transaction2 : started
+21:22:035.465 - [77] Transaction2 : terminated
+21:22:035.489 - [88] Transaction1 : Executing third query
+21:22:035.521 - [89] Transaction2 : Executing first query
+21:22:035.525 - [90] Transaction3 : started
+21:22:035.603 - [90] Transaction3 : Executing first query
+21:22:035.720 - [90] Transaction3 : Executing second query
+21:22:035.765 - [88] Transaction1 : terminated
+21:22:035.819 - [90] Transaction3 : Executing third query
+21:22:035.862 - [90] Transaction3 : terminated
+21:22:038.639 - [86] Transaction2 : Executing second query
+21:22:039.99 - [80] Transaction2 : terminated
+21:22:039.230 - [89] Transaction2 : Executing second query
+21:22:039.264 - [83] Transaction2 : terminated
+21:22:040.251 - [86] Transaction2 : Executing third query
+21:22:040.802 - [89] Transaction2 : Executing third query
+21:22:041.955 - [86] Transaction2 : terminated
+21:22:042.424 - [89] Transaction2 : terminated

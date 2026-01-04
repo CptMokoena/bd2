@@ -7,11 +7,13 @@ public class Transaction2 extends BaseTransaction {
 
     public Transaction2(int transactionId) {
         super(transactionId);
-        this.isolationLevel = Connection.TRANSACTION_REPEATABLE_READ;
+        this.isolationLevel = Connection.TRANSACTION_SERIALIZABLE;
     }
 
     @Override
     protected void executeTransaction() throws SQLException {
+        log("Executing first query");
+
         var s1 = this.conn.prepareStatement(
                 "select \"user\", sum(hours_played) as total_user_hours from user_game group by \"user\" order by total_user_hours desc"
         );
@@ -19,6 +21,8 @@ public class Transaction2 extends BaseTransaction {
         s1.execute();
 
         simulateOps();
+
+        log("Executing second query");
 
         var s2 = this.conn.prepareStatement(
                 "select game, sum(hours_played) as total_hours_played, avg(hours_played) as avg_hours_per_game\n" +
@@ -28,6 +32,8 @@ public class Transaction2 extends BaseTransaction {
         s2.execute();
 
         simulateOps();
+
+        log("Executing third query");
         
         var s3 = this.conn.prepareStatement(
                 "select \"user\", sum(hours_played) as total_user_hours from user_game group by \"user\" order by total_user_hours desc"

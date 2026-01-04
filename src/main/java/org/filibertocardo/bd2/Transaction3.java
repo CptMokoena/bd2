@@ -16,6 +16,8 @@ public class Transaction3 extends BaseTransaction {
         String game = "OChEQjTJNNcoYhAJoO4zdjiGxA4oF8fJEgAM";
         String achievement = generateRandomString(19);
 
+        log("Executing first query");
+
         var s1 = this.conn.prepareStatement(
                 "select hours_played from user_game where \"user\" = ? and game = ?"
         );
@@ -24,6 +26,8 @@ public class Transaction3 extends BaseTransaction {
         s1.execute();
         
         simulateOps();
+
+        log("Executing second query");
 
         var s2 = this.conn.prepareStatement(
                 "update user_game set hours_played = hours_played + ?\n" +
@@ -36,6 +40,8 @@ public class Transaction3 extends BaseTransaction {
 
         simulateOps();
 
+        log("Executing third query");
+        
         var s3 = this.conn.prepareStatement(
                 "insert into user_achievement (\"user\", achievement, unlocked_date, unlocked_at_played_hours )\n" +
                     "values (?, ?, now(), (select hours_played from user_game where \"user\" = ? and game = ?) );\n"
