@@ -2,7 +2,7 @@
 -- base_user: utente base che utilizza l'applicazione
 -- game_owner: può creare giochi e gestirli, in più può creare achievements per i suoi giochi
 -- support: da supporto a user e game_owner
--- data_admin: DIO
+-- data_admin: 
 
 -- data_admin > support > base_user, game_owner
 

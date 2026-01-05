@@ -383,3 +383,65 @@ Il software è impostato in modo che crei un checkpoint all'inizio della transaz
 Per scelta, un eventuale statement in errore viene semplicemente saltato, non compromettetendo l'intera transazione. In un contesto reale potrebbe non essere la scelta migliore, ma data la natura di questo progetto abbiamo preferito adoperare questo comportamento. Ad ogni modo, in tutti i test eseguito non è mai capitato di ricevere alcun errore.
 
 ## PARTE D
+In PostgresSQL ruoli e utenti sono la stessa cosa. La differenza tra di essi è per lo più concettuale e solitamente vengono distinti solamente dal fatto che un utente è un ruolo con il flag *rolcanlogin* a true (quindi un ruolo che può fare la login). Tutte le informazioni rigurdanti i ruoli/utenti si trovano nella tabella *pg_roles*.
+
+### 1
+Per questa base dati sono stati creati quattro ruoli:
+- base_user (utente base che utilizza l'applicazione)
+- game_owner (può creare giochi e gestirli, in più può creare achievements per i suoi giochi)
+- support (da supporto a user e game_owner)
+- data_admin (è l'utente che possiede tutti i ruoli ed è l'amministratore di questo dominio. Non è l'admin vero e proprio della base dati, ma semplicemente possiede tutti i ruoli e permessi degli altri utenti)
+
+L'eredità dei ruoli è definita nel seguente modo:
+data_admin > support > base_user, game_owner
+
+### 2 e 3
+Tutti comandi SQL sono prensenti nel file [access.sql](../src/main/sql/access.sql).
+
+Per il secondo e terzo punto sono stati definiti otto utenti a cui sono stati legati determinati ruoli:
+- anna (base_user)
+- maria  (base_user)
+- davide  (game_owner)
+- lorenzo (game_owner)
+- giampiero (support)
+- jotaro (data_admin)
+- iacopo (base_user)
+- luca (base_user)
+
+La creazione di un utente e l'attribuzione di un ruolo ad esso sono stati attribuiti tramite i comandi *CREATE ROLE*, *CREATE USER*, *GRANT* seguendo la seguente grammatica:
+
+```sql
+CREATE ROLE role;
+CREATE ROLE superRole;
+GRANT role TO superRole;
+CREATE USER user WITH PASSWORD 'secret_password';
+GRANT role TO user;
+```
+
+### 4
+Per il terzo punto abbiamo modificato i permessi di un ruolo, assegnandogli il permesso di *SELECT* su due tabelle
+
+### 5
+Per il quinto punto, tramite l'utilizzo del comando *REVOKE* abbiamo inizialmente rimosso un permesso ad un ruolo (rimosso il permesso *select* dal ruolo game_owner)
+```sql
+REVOKE select ON achievement_obtained_stats FROM game_owner;
+```
+Successivamente abbiamo rimosso l'ereditarietà di un ruolo da un altro ruolo (il ruolo support non è più anche un game_owner)
+```sql
+REVOKE game_owner FROM support;
+```
+
+Come ultima operazione, abbiamo attribuito il permesso di *delete* sulla tabella *t1* ad un utente con in più l'opzione **GRANT OPT**, ovvero la possibilità da parte di questo utente di assegnare a sua volta questo permesso a qualcun altro. Tramite il comando *SET ROLE* abbiamo assunto il ruolo dell'utente scelto e abbiamo attribuito il permesso di *delete* sulla tabella *t1* ad un altro utente (senza l'opzione *GRANT OPT*); finita questa operazione, siamo tornati al ruolo che possedevamento all'inizio tramite il comando *RESET ROLE*
+
+Per terminare abbiamo usato il comando *REVOKE* per rimuovere il permesso *delete* al primo utente e tramite l'utilizzo dell'opzione **CASCADE**, il permesso è stato rimosso anche al secondo utente a cui era stato attribuito il permesso dal primo utente. Se non avessimo usato l'opzione **CASCADE** il comando sarebbe fallito essendo se non specificato, viene usata l'opzione **RESTRICT** che non permette di rimuovere un permesso ad un utente che a sua volta ha assegnato lo stesso permesso ad un altro.
+```sql
+GRANT delete ON user_achievement TO iacopo WITH GRANT OPTION;
+SET ROLE iacopo;
+GRANT delete ON user_achievement TO luca;
+RESET ROLE;
+REVOKE delete ON user_achievement FROM iacopo CASCADE;
+```
+
+Il comando *REVOKE* non rimuove tutti i permessi p attribuiti da tutti gli utenti, ma solamente il permesso p assegnato dall'utente che esegue il comando.
+
+Facendo un esempio: ipotizzando che il permesso p sia stato assegnato dall'utente *a* all'utente/ruolo *b*, e lo stesso permesso sia stato assegnato anche dall'utente *c*, se l'utente *a* revocasse il permesso p all'utente *b*, quest'ultimo continuerebbe ad avere il permesso p, essendo che gli è stato assegnato dall'utente *c*
