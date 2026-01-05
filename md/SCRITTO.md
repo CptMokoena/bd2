@@ -287,7 +287,7 @@ Creazione di nuovo gioco con un achievement, assegnato ad un gruppo di utenti ch
   ii. inserimento del nuovo achievement
   iii. inserimento nella tabella `user_game` per legare il nuovo gioco ad alcuni utenti
 
-Livello di isolamento: *READ COMMITTED*
+Livello di isolamento: nel primo test *READ COMMITTED*, nel secondo test *SERIALIZABLE*
 L'obiettivo è garantire di non far vedere dati a metà; `READ COMMITTED` è sufficiente per prevenire letture sporche, garantendo che la transazione
 veda solo dati che sono stati committati da altre transazioni.
 
@@ -299,7 +299,7 @@ Statistiche sui tempi legati ai giochi (tempo medio / tempo totale)  e classific
   ii. Calcolo del tempo di gioco medio e totale per gioco
   iii. Classifica dei giocatori che hanno giocato di più (lettura ripetuta)
 
-Livello di isolamento: *REPEATABLE READ*
+Livello di isolamento: nel primo test *REPEATABLE READ*, nel secondo test *SERIALIZABLE*
 In questo caso abbiamo bisogno di un livello di isolamento che impedisca
 ad altre transazioni di modificare la classifica tra la prima lettura e la seconda lettura.
 
@@ -311,42 +311,43 @@ Gestione del progresso di un utente in un gioco che sblocca un obbiettivo
   ii. Aggiornamento delle ore giocate
   iii. Inserimento di un nuovo obiettivo per l'utente
 
-Livello di isolamento: *SERIALIZABLE*
+Livello di isolamento: in entrambi i test *SERIALIZABLE*
 In questo caso abbiamo bisogno del livello massimo di isolamento, in quanto queste tre query hanno una dipendenza logica stretta.
 Se una transazione (ad esempio un altro aggiornamento delle ore di gioco) intervenisse tra le operazioni, si potrebbe verificare un risultato inconsistente.
 
 Condizioni rispettate: a,c,e,f,g
 
 ### 4
+ PostgresSQL utilizza il protocollo MVCC (Multi-Version Concurrency Control) con Snapshot isolation, che si basa sul fatto che al posto che mettere il lock, genera una snapshot della risorsa su cui si vuole effettuare la query. Se la transazione poi devo aggiornare dei dati (update/insert/delete), la transazione dovrà richiedere un certify lock per far si di rendere lo stato del db della snapshot, la nuova versione ufficiale.
 
 ![run_transactions_90_6.txt](./run_transactions_90_6.txt)
 
-L'analisi dello scheduling fornito rivela il comportamento tipico di PostgreSQL sotto carico, mettendo in luce come il motore gestisca la concorrenza tramite il protocollo MVCC (Multi-Version Concurrency Control) e i diversi livelli di isolamento richiesti.
+Nel primo test, l'analisi dello scheduling fornito rivela il comportamento tipico di PostgreSQL sotto carico, mettendo in luce come il motore gestisca la concorrenza tramite il protocollo MVCC e i diversi livelli di isolamento richiesti.
 
-La caratteristica più evidente è che le Transaction1 (T1) e le Transaction3 (T3) iniziano e terminano molto rapidamente, mentre le Transaction2 (T2) rimangono "aperte" per periodi molto lunghi (anche minuti).
+La caratteristica più evidente è che le Transaction1 (T1) e le Transaction3 (T3) iniziano e terminano molto rapidamente, mentre le Transaction2 (T2) rimangono attive per periodi molto lunghi (anche minuti).
 
-T2 (Repeatable Read, Read Only): Essendo REPEATABLE READ, Postgres garantisce che la transazione veda solo i dati commitati nel momento esatto in cui è iniziata la prima query. Per fare ciò, Postgres non blocca le tabelle, ma usa uno Snapshot.
+T2 (Repeatable Read, Read Only): Essendo REPEATABLE READ, Postgres garantisce che la transazione veda solo i dati commitati nel momento esatto in cui è iniziata la prima query. Come detto antecedentemente per fare ciò, Postgres non blocca le tabelle, ma usa uno Snapshot.
 
-Perché T2 è lenta? T2 esegue aggregazioni pesanti (SUM, AVG, GROUP BY) sull'intera tabella user_game. Mentre T2 calcola questi dati, T1 e T3 continuano a inserire e modificare righe. Grazie al MVCC, i lettori non bloccano gli scrittori e viceversa. T2 continua a lavorare sulla sua versione "congelata" dei dati mentre il database evolve.
+Perché T2 è lenta? T2 esegue aggregazioni pesanti (SUM, AVG, GROUP BY) sull'intera tabella user_game. Mentre T2 calcola questi dati, T1 e T3 continuano a inserire e modificare righe. Grazie al MVCC, le query in lettura non bloccano le query di scrittura di altre transazioni e viceversa. T2 continua a lavorare sulla sua versione "congelata" dei dati mentre il database evolve.
 
 2. Analisi dei Livelli di Isolamento e Conflitti
 Transaction 1: Read Committed
-È il livello di default. Ogni query all'interno di T1 vede uno snapshot aggiornato al momento dell'inizio della query stessa.
+È il livello di default in PostgresSQL. Ogni query all'interno di T1 vede uno snapshot aggiornato al momento dell'inizio della query stessa.
 
-Comportamento: T1 esegue INSERT e un INSERT INTO ... SELECT. Quest'ultima operazione può essere lenta se la tabella users è grande, ma nello scheduling vediamo che T1 termina solitamente in 1-2 secondi. Non subisce blocchi da T2 perché le inserzioni non entrano in conflitto con le letture di aggregazione.
+Comportamento: T1 esegue tre INSERT di cui una composta da una select. Quest'ultima operazione può essere lenta se la tabella users è grande, ma nello scheduling vediamo che T1 termina solitamente in 1-2 secondi.
 
 Transaction 2: Repeatable Read (Read Only)
-Analisi temporale: Notiamo che tra le 21:18:049 e le 21:21:019 (circa 3 minuti) molte T2 sono in esecuzione.
 
-Giustificazione: T2 esegue tre query pesanti. La seconda query (l'aggregazione totale per gioco) richiede una scansione sequenziale di user_game. In un sistema con 10 transazioni parallele (e il limite di maxConcurrent=6 imposto dal tuo software), le risorse di I/O e CPU sono saturate dalle aggregazioni, rallentando T2 ma permettendo alle brevi T1 e T3 di "infilarsi" tra i cicli di CPU disponibili.
+Comportamento: T2 esegue tre query pesanti. La seconda query (l'aggregazione totale per gioco) richiede una scansione sequenziale di user_game. Queste tre query sono tutte query di selezione e in PostgresSQL, grazie al protocollo MVCC con Snapshot isolation, non bloccano le altre transazioni (T1 e T3) di proseguire essendo il livello di isolamento Repeatable Read. 
 
 Transaction 3: Serializable
 Questo è il livello più restrittivo. Postgres usa il SSI (Serializable Snapshot Isolation). Invece di bloccare le righe preventivamente, monitora le dipendenze tra transazioni (Read/Write dependencies).
 
-Logica di T3: Legge hours_played, lo aggiorna e inserisce un achievement. È un classico pattern "Read-Modify-Write".
+Comportamento di T3: Legge hours_played, lo aggiorna e inserisce un achievement.
+T3 non sembra fallire con errori di serializzazione (che porterebbero a un rollback). Questo accade perché probabilmente ogni thread T3 agisce su un utente diverso (user_1 è un esempio, ma nel test reale i parametri variano probabilmente per thread). Se due T3 colpissero contemporaneamente lo stesso utente e gioco, Postgres abortirebbe una delle due per prevenire anomalie.
 
-Nello scheduling: T3 non sembra fallire con errori di serializzazione (che porterebbero a un rollback). Questo accade perché probabilmente ogni thread T3 agisce su un utente diverso (user_1 è un esempio, ma nel test reale i parametri variano probabilmente per thread). Se due T3 colpissero contemporaneamente lo stesso utente e gioco, Postgres abortirebbe una delle due per prevenire anomalie.
 
+Da rimuovere questa parte?
 3. Effetto della saturazione (Max Concurrent = 6)
 Il log mostra un collo di bottiglia orchestrato dal parametro maxConcurrent=6:
 
@@ -356,6 +357,7 @@ Appena una T3 (più leggera) termina (es. Thread [3] alle 21:18:051.569), viene 
 
 Questo spiega perché vediamo una "pioggia" di T1 e T3 che si completano mentre le T2 (Thread 2, 5, 8, 11, 14, 17) rimangono in coda di esecuzione per le query 2 e 3.
 
+Da rimuovere questa parte?
 4. Il "Batch" finale delle T2
 Notiamo un fenomeno interessante intorno alle 21:21:019: Improvvisamente, molti Thread di Transaction2 (8, 17, 14, 2, 11, 5) eseguono la loro "Second Query" quasi contemporaneamente.
 
@@ -365,41 +367,15 @@ Spiegazione: Probabilmente la prima query di aggregazione ha causato il caricame
 
 ![run_transactions_90_6_after.txt](./run_transactions_90_6_after.txt)
 
-L'impostazione di tutte le transazioni al livello SERIALIZABLE su PostgreSQL 18 introduce un cambiamento fondamentale nella gestione interna, anche se, a prima vista, lo scheduling sembra mantenere una struttura simile al precedente.
+Nel secondo test. l'impostazione di tutte le transazioni al livello SERIALIZABLE su PostgreSQL introduce un cambiamento fondamentale nella gestione interna, anche se, a prima vista, lo scheduling sembra mantenere una struttura simile al precedente.
+Come detto in precedenza, in PostgreSQL il livello SERIALIZABLE non usa lock pesanti per bloccare le letture (come farebbe un protocollo basato su lock a due fasi rigido), ma utilizza il SSI (Serializable Snapshot Isolation) che è un protocollo ottimistico. PostgreSQL permette l'esecuzione parallela e controlla solo al momento del COMMIT se si è verificata un'anomalia di serializzazione
 
-In PostgreSQL, il livello SERIALIZABLE non usa lock pesanti per bloccare le letture (come farebbe un protocollo basato su lock a due fasi rigido), ma utilizza il SSI (Serializable Snapshot Isolation).
+Nello scheduling notiamo che le T1 e le T3 continuano a terminare rapidamente nonostante le T2 stiano leggendo l'intera tabella. Anche in modalità SERIALIZABLE, PostgreSQL permette alle query in lettura di non bloccare le query di scrittura di altre transazioni.
 
-Ecco la giustificazione tecnica del nuovo scheduling basata sui meccanismi di controllo della concorrenza:
+Poiché non vediamo errori di rollback nel log (tutte terminano con terminated), significa che PostgreSQL ha stabilito che l'ordine temporale delle operazioni non ha creato cicli di dipendenza. Ad esempio, se T2 legge i dati prima che T1 inserisca il nuovo gioco, e T2 non ha bisogno di quel nuovo gioco per la sua coerenza interna, la transazione procede.
 
-1. Il Protocollo SSI (Serializable Snapshot Isolation)
-Nello scheduling notiamo che le T1 e le T3 continuano a terminare rapidamente nonostante le T2 stiano leggendo l'intera tabella.
+In modalità SERIALIZABLE, PostgreSQL deve mantenere in memoria una RAM aggiuntiva per tracciare le dipendenze tra i thread. Questo può rallentare leggermente le query di aggregazione pesanti di T2 rispetto al livello READ COMMITTED.
 
-Nessun blocco tra lettori e scrittori: Anche in modalità SERIALIZABLE, PostgreSQL permette ai lettori (T2) di non bloccare gli scrittori (T1, T3).
-
-Ottimismo: SSI è un protocollo ottimistico. PostgreSQL permette l'esecuzione parallela e controlla solo al momento del COMMIT se si è verificata un'anomalia di serializzazione (come il Serialization Find o il Write Skew).
-
-2. Gestione dei Predicate Lock (SIREAD locks)
-Per garantire la serializzabilità, PostgreSQL tiene traccia di chi ha letto cosa.
-
-T2 esegue SELECT SUM(hours_played) ... GROUP BY game. Questa query acquisisce dei Predicate Lock (o SIREAD locks) sull'intera tabella user_game.
-
-T1 e T3 eseguono inserimenti e aggiornamenti sulla stessa tabella.
-
-Giustificazione dello scheduling: Poiché non vediamo errori di rollback nel log (tutte terminano con terminated), significa che PostgreSQL ha stabilito che l'ordine temporale delle operazioni non ha creato cicli di dipendenza. Ad esempio, se T2 legge i dati prima che T1 inserisca il nuovo gioco, e T2 non ha bisogno di quel nuovo gioco per la sua coerenza interna, la transazione procede.
-
-3. Analisi del "Gap Temporale" di T2
-Notiamo che le T2 (ad esempio i thread [2, 5, 8, 11, 14, 17]) rimangono attive dalle 15:50:049 fino alle 15:52:052 (circa 2 minuti di elaborazione).
-
-Overhead di monitoraggio: In modalità SERIALIZABLE, PostgreSQL deve mantenere in memoria una RAM aggiuntiva per tracciare le dipendenze tra i 90 thread. Questo può rallentare leggermente le query di aggregazione pesanti di T2 rispetto al livello READ COMMITTED.
-
-Saturazione delle risorse: Con maxConcurrent=6, i 6 slot di esecuzione sono costantemente occupati dalle T2. Le T1 e T3 riescono a completarsi velocemente solo perché sono operazioni atomiche brevi che "rubano" cicli di CPU tra una fase e l'altra delle pesanti aggregazioni di T2.
-
-4. Perché non ci sono Rollback?
-In uno scenario SERIALIZABLE con molti thread, ci si aspetterebbe l'errore 40001 (serialization_failure). Se non accade, è giustificato da:
-
-Dati non sovrapposti: Se ogni Transaction3 aggiorna un user diverso (es. user_1, user_2, etc.), non c'è conflitto diretto sulle righe.
-
-Assenza di cicli: PostgreSQL rileva un'anomalia solo se si verifica un pattern specifico: Transazione A scrive qualcosa che Transazione B ha letto, e Transazione B scrive qualcosa che Transazione A ha letto. Qui T2 è READ ONLY, il che riduce drasticamente la probabilità di conflitti circolari, rendendo la convivenza possibile.
 
 ### 6
 Il software è impostato in modo che crei un checkpoint all'inizio della transazione, prima di eseguire gli statement, e di ripristinarlo in caso di commit fallito.
