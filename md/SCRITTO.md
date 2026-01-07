@@ -417,7 +417,13 @@ GRANT role TO user;
 ```
 
 ### 4
-Per il terzo punto abbiamo modificato i permessi di un ruolo, assegnandogli il permesso di *SELECT* su due tabelle
+```sql
+CREATE VIEW game_owned_stats as SELECT g.name as game_name, COUNT(ug.game) as user_count
+                                FROM games g
+                                         JOIN user_game ug on ug.game = g.code
+                                GROUP BY g.name;
+grant select on game_owned_stats to iacopo;
+```sql
 
 ### 5
 Per il quinto punto, tramite l'utilizzo del comando *REVOKE* abbiamo inizialmente rimosso un permesso ad un ruolo (rimosso il permesso *select* dal ruolo game_owner)
