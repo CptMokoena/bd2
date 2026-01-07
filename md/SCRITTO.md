@@ -220,21 +220,45 @@ CREATE INDEX idx__achievements__difficulty ON achievements(difficulty);
 CREATE INDEX idx__achievements__game ON achievements(game, name);
 ```
 ### 4
+#### Query 1
+- Prima
 ![Query 1 PRE](./query_1.png)
+- Dopo
 ![Query 1 POST](./query_1_post.png)
+#### Query 2
+- Prima
 ![Query 2 PRE](./query_2.png)
+- Dopo
 ![Query 2 POST](./query_2_post.png)
+#### Query 3
+- Prima
 ![Query 3 PRE](./query_3.png)
+- Dopo
 ![Query 3 POST](./query_3_post.png)
+#### Query 4
+- Prima
 ![Query 4 PRE](./query_4.png)
+- Dopo
 ![Query 4 POST](./query_4_post.png)
+#### Query 5
+- Prima
 ![Query 5 PRE](./query_5.png)
+- Dopo
 ![Query 5 POST](./query_5_post.png)
+#### Query 6
+- Prima
 ![Query 6 PRE](./query_6.png)
+- Dopo
 ![Query 6 POST](./query_6_post.png)
+#### Query 7
+- Prima
 ![Query 7 PRE](./query_7.png)
+- Dopo
 ![Query 7 POST](./query_7_post.png)
+#### Query 8
+- Prima
 ![Query 8 PRE](./query_8.png)
+- Dopo
 ![Query 8 POST](./query_8_post.png)
 
 | query | prima | dopo |
@@ -249,7 +273,7 @@ CREATE INDEX idx__achievements__game ON achievements(game, name);
 | query 8 | 1198ms | 1151ms |
 
 La maggior parte delle query ottengono un enorme beneficio dalla presenza degli
-indici; per esempio nella query 7 gli indici consentono di evitare le due due full scan su user_achievement e achievements, oppure la query 4 che consente di effettura
+indici; per esempio nella query 7 gli indici consentono di evitare le due full scan su user_achievement e achievements, oppure la query 4 che consente di effettura
 la query sfruttando interamente gli indici.
 Nelle query ad alta selettività (query 1, query 5, query 8) si può notare che il
 miglioramento dato dalla presenza dello schema fisico è minimo. Questo è dovuto al fatto che, quando una select ritorna più del 5-10% delle tuple di una relazione, è 
@@ -318,31 +342,29 @@ Se una transazione (ad esempio un altro aggiornamento delle ore di gioco) interv
 Condizioni rispettate: a,c,e,f,g
 
 ### 4
- PostgresSQL utilizza il protocollo MVCC (Multi-Version Concurrency Control) con l'SSI (Serializable Snapshot Isolation), che si basa sul fatto che al posto che mettere il lock, genera una snapshot della risorsa su cui si vuole effettuare la query. Se la transazione poi devo aggiornare dei dati (update/insert/delete), la transazione dovrà richiedere un certify lock per far si di rendere lo stato del db della snapshot, la nuova versione ufficiale.
+ PostgresSQL utilizza il protocollo MVCC (Multi-Version Concurrency Control) con l'SSI (Serializable Snapshot Isolation), che si basa sul fatto che al posto che mettere il lock, genera una snapshot della risorsa su cui si vuole effettuare la query. Se la transazione poi deve aggiornare dei dati (update/insert/delete), la transazione dovrà richiedere un certify lock per far si di rendere lo stato del db della snapshot, la nuova versione ufficiale.
 
 ![run_transactions_90_6.txt](./run_transactions_90_6.txt)
 
 Nel primo test, l'analisi dello scheduling fornito rivela il comportamento tipico di PostgreSQL sotto carico, mettendo in luce come il motore gestisca la concorrenza tramite il protocollo MVCC con SSI e i diversi livelli di isolamento richiesti.
-La caratteristica più evidente è che le Transaction1 (T1) e le Transaction3 (T3) iniziano e terminano molto rapidamente, mentre le Transaction2 (T2) rimangono attive per periodi molto lunghi (anche minuti).
-Perché le T2 sono lente? Una transazione T2 esegue aggregazioni pesanti (SUM, AVG, GROUP BY) sull'intera tabella user_game. Mentre T2 calcola questi dati, T1 e T3 continuano a inserire e modificare righe, ma grazie al MVCC con SSI, le query in lettura non bloccano le query di scrittura di altre transazioni e viceversa. T2 continua a lavorare sulla sua versione "congelata" (una SNAPSHOT) dei dati mentre il database evolve.
+La caratteristica più evidente è che le Transaction1 (T1) e le Transaction3 (T3) iniziano e terminano molto rapidamente, mentre le Transaction2 (T2) rimangono attive per periodi molto lunghi (anche minuti).  
+Una transazione T2 esegue aggregazioni pesanti (SUM, AVG, GROUP BY) sull'intera tabella user_game; mentre  quest'ultime calcolano questi dati, T1 e T3 continuano a inserire e modificare righe, ma grazie ai protocolli usati, le query in lettura non bloccano le query di scrittura di altre transazioni e viceversa. T2 continua a lavorare sulla sua SNAPSHOT dei dati mentre il database cambia.
 
-2. Analisi dei Livelli di Isolamento e Conflitti
 Transaction 1: Read Committed
 È il livello di default in PostgresSQL. Ogni query all'interno di T1 vede una snapshot aggiornata al momento dell'inizio della query stessa.
 Comportamento: T1 esegue tre INSERT di cui una composta da una select. Quest'ultima operazione può essere lenta se la tabella users è grande, ma nello scheduling vediamo che T1 termina solitamente in 1-2 secondi.
 
 Transaction 2: Repeatable Read (Read Only)
 Essendo REPEATABLE READ, Postgres garantisce che la transazione veda solo i dati commitati nel momento esatto in cui è iniziata la prima query. Come detto antecedentemente per fare ciò, PostgresSQL non blocca le tabelle, ma usa una Snapshot.
-Comportamento: T2 esegue tre query pesanti. La seconda query (l'aggregazione totale per gioco) richiede una scansione sequenziale di user_game. Queste tre query sono tutte query di selezione e in PostgresSQL, grazie al protocollo MVCC con Snapshot isolation, non bloccano le altre transazioni (T1 e T3) di proseguire essendo il livello di isolamento Repeatable Read. 
+Comportamento: T2 esegue tre query pesanti. La seconda query (l'aggregazione totale per gioco) richiede una scansione sequenziale di user_game. Queste tre query sono tutte query di selezione e in PostgresSQL, non bloccano le altre transazioni (T1 e T3) di proseguire essendo il livello di isolamento Repeatable Read. 
 
 Transaction 3: Serializable
 Questo è il livello più restrittivo. Invece di bloccare le righe preventivamente, monitora le dipendenze tra transazioni (Read/Write dependencies).
 Comportamento di T3: Legge hours_played, lo aggiorna e inserisce un achievement.
-T3 non sembra fallire con errori di serializzazione (che porterebbero a un rollback). Questo accade perché probabilmente ogni thread T3 agisce su un utente diverso (user_1 è un esempio, ma nel test reale i parametri variano probabilmente per thread). Se due T3 colpissero contemporaneamente lo stesso utente e gioco, Postgres abortirebbe una delle due per prevenire anomalie.
+T3 non sembra fallire con errori di serializzazione (che porterebbero a un rollback). Questo accade perché probabilmente ogni thread T3 agisce su un utente diverso (user_1 è un esempio, ma nel test reale i parametri variano probabilmente per thread). Se due T3 lavorassero contemporaneamente sullo stesso utente e gioco, Postgres abortirebbe una delle due per prevenire anomalie.
 
 
 ### 5
-
 ![run_transactions_90_6_after.txt](./run_transactions_90_6_after.txt)
 
 Nel secondo test, il livello di isolamento di tutte le transazioni è stato cambiato in SERIALIZABLE. PostgreSQL introduce un cambiamento fondamentale nella gestione interna, facendo si che lo scheduling sembri mantenere una struttura simile al test precedente.
@@ -352,9 +374,6 @@ PostgreSQL permette l'esecuzione parallela e controlla solo al momento del COMMI
 Nello scheduling notiamo che le T1 e le T3 continuano a terminare rapidamente nonostante le T2 stiano leggendo l'intera tabella. Anche in modalità SERIALIZABLE, PostgreSQL permette alle query in lettura di non bloccare le query di scrittura di altre transazioni.
 
 Poiché non vediamo errori di rollback nel log (tutte terminano con terminated), significa che PostgreSQL ha stabilito che l'ordine temporale delle operazioni non ha creato cicli di dipendenza. Ad esempio, se T2 legge i dati prima che T1 inserisca il nuovo gioco, e T2 non ha bisogno di quel nuovo gioco per la sua coerenza interna, la transazione procede.
-
-In modalità SERIALIZABLE, PostgreSQL deve mantenere in memoria una RAM aggiuntiva per tracciare le dipendenze tra i thread. Questo può rallentare leggermente le query di aggregazione pesanti di T2 rispetto al livello READ COMMITTED.
-
 
 ### 6
 Il software è impostato in modo che crei un checkpoint all'inizio della transazione, prima di eseguire gli statement, e di ripristinarlo in caso di commit fallito.
